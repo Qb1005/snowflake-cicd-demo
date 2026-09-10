@@ -1,0 +1,108 @@
+name: Snowflake Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  deploy-dev:
+
+    runs-on: ubuntu-latest
+
+    environment: dev
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Deploy to Snowflake DEV
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+
+          SNOWFLAKE_DATABASE: ${{ vars.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_SCHEMA: ${{ vars.SNOWFLAKE_SCHEMA }}
+
+        run: python src/snowflake_deploy.py
+
+  deploy-test:
+
+    needs: deploy-dev
+
+    runs-on: ubuntu-latest
+
+    environment: test
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+            python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Deploy to Snowflake TEST
+        env:
+            SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+            SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+            SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+            SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+            SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+
+            SNOWFLAKE_DATABASE: ${{ vars.SNOWFLAKE_DATABASE }}
+            SNOWFLAKE_SCHEMA: ${{ vars.SNOWFLAKE_SCHEMA }}
+
+        run: python src/snowflake_deploy.py
+
+  deploy-prod:
+
+    needs: deploy-test
+
+    runs-on: ubuntu-latest
+
+    environment: prod
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+            python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Deploy to Snowflake PROD
+        env:
+            SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+            SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+            SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+            SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+            SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+
+            SNOWFLAKE_DATABASE: ${{ vars.SNOWFLAKE_DATABASE }}
+            SNOWFLAKE_SCHEMA: ${{ vars.SNOWFLAKE_SCHEMA }}
+
+        run: python src/snowflake_deploy.py
