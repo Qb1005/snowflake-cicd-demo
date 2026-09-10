@@ -1,2 +1,4 @@
 snowflake-connector-python
 pytest
+ruff
+sqlfluff
