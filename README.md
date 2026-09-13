@@ -31,34 +31,43 @@ Feature Branch
     v
 Pull Request
     |
-    v
-+---------------------------------------+
-|              CI Validation            |
-|                                       |
-|  Python unit tests                    |
-|  Python code quality                  |
-|  Snowflake SQL linting                |
-|  dbt build and data tests              |
-|  Terraform validation / plan          |
-+-------------------+-------------------+
-                    |
-                    v
-          Required Checks and Review
-                    |
-                    v
-               Merge to main
-                    |
-                    v
-             GitHub Actions CD
-                    |
-          +---------+----------+
-          |         |          |
-          v         v          v
+    +---------------- CI ----------------+
+    |                                    |
+    |  Ruff                              |
+    |  pytest                            |
+    |  SQLFluff                          |
+    |  Schemachange validation           |
+    |  dbt validation                    |
+    |  Terraform validation / plan       |
+    |                                    |
+    +----------------+-------------------+
+                     |
+                  Merge main
+                     |
+                     v
+              GitHub Actions CD
+                     |
+          +----------+----------+
+          |          |          |
+          v          v          v
       Terraform  Schemachange  dbt
-          |         |          |
-          v         v          v
-   Infrastructure  Database   Analytical
-   and Access      Migrations Models
+          |          |          |
+          v          v          v
+  Infrastructure  Database  Analytical
+    and Access    Migration   Model
+          |          |          |
+          +----------+----------+
+                     |
+                     v
+                    DEV
+                     |
+                     v
+                   TEST
+                     |
+              Approval Gate
+                     |
+                     v
+                   PROD
 ```
 
 Deployment dependencies determine execution order. Infrastructure and database objects must be available before dependent migrations or transformations run.
