@@ -1,7 +1,4 @@
-from src.calculator import (
-    calculate_revenue,
-    calculate_discount
-)
+from src.calculator import calculate_discount, calculate_revenue
 
 
 def test_calculate_revenue():
