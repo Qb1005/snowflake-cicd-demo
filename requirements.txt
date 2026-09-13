@@ -2,3 +2,4 @@ snowflake-connector-python
 pytest
 ruff
 sqlfluff
+schemachange==4.3.3

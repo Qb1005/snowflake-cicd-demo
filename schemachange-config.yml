@@ -1,0 +1,3 @@
+root-folder: migrations
+
+create-change-history-table: true
