@@ -1,0 +1,4 @@
+# Ruff cache
+.ruff_cache/
+# Pytest cache
+.pytest_cache
