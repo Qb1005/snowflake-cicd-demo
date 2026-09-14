@@ -1,11 +1,15 @@
 name: Schemachange Deployment
 
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - main
     paths:
       - "migrations/**"
+      - "src/validate_deployment.py"
+      - "schemachange-config.yml"
       - ".github/workflows/schemachange-deploy.yml"
 
 permissions:
