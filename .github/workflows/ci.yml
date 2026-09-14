@@ -80,4 +80,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run SQLFluff
-        run: sqlfluff lint sql/ --dialect snowflake
+        run: sqlfluff lint sql/ migrations/ --dialect snowflake
