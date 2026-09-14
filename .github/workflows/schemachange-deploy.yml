@@ -57,7 +57,7 @@ jobs:
         run: |
           schemachange deploy \
             -f migrations \
-            -c CICD_METADATA.DEV_SCHEMACHANGE.CHANGE_HISTORY \
+            -c "${{ vars.SCHEMACHANGE_CHANGE_HISTORY_TABLE }}" \
             --create-change-history-table
 
       - name: Validate DEV deployment
@@ -116,10 +116,10 @@ jobs:
           SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_ROLE }}
 
         run: |
-            schemachange deploy \
-                -f migrations \
-                -c CICD_METADATA.TEST_SCHEMACHANGE.CHANGE_HISTORY \
-                --create-change-history-table
+          schemachange deploy \
+            -f migrations \
+            -c "${{ vars.SCHEMACHANGE_CHANGE_HISTORY_TABLE }}" \
+            --create-change-history-table
 
       - name: Validate DEV deployment
         env:
@@ -132,6 +132,7 @@ jobs:
           SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_ROLE }}
 
         run: python src/validate_deployment.py
+
   deploy-prod:
     name: Deploy PROD
     needs: deploy-test
@@ -178,7 +179,7 @@ jobs:
         run: |
           schemachange deploy \
             -f migrations \
-            -c CICD_METADATA.PROD_SCHEMACHANGE.CHANGE_HISTORY \
+            -c "${{ vars.SCHEMACHANGE_CHANGE_HISTORY_TABLE }}" \
             --create-change-history-table
 
       - name: Validate DEV deployment
