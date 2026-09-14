@@ -37,14 +37,14 @@ def main():
             SELECT COUNT(*)
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_SCHEMA = CURRENT_SCHEMA()
-              AND TABLE_NAME = 'CUSTOMERS'
+              AND TABLE_NAME = 'DOES_NOT_EXIST'
             """
         )
 
         customer_table_count = cursor.fetchone()[0]
 
         if customer_table_count != 1:
-            raise RuntimeError("CUSTOMERS table was not found")
+            raise RuntimeError("DOES_NOT_EXIST table was not found")
 
         cursor.execute(
             """
