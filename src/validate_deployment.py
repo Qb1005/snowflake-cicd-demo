@@ -4,7 +4,7 @@ import snowflake.connector
 
 
 def main():
-    conn = snowflake.connector.connect(
+    connection = snowflake.connector.connect(
         account=os.environ["SNOWFLAKE_ACCOUNT"],
         user=os.environ["SNOWFLAKE_USER"],
         password=os.environ["SNOWFLAKE_PASSWORD"],
@@ -14,26 +14,57 @@ def main():
         role=os.environ["SNOWFLAKE_ROLE"],
     )
 
-    cursor = conn.cursor()
+    cursor = connection.cursor()
 
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM INFORMATION_SCHEMA.TABLES
-        WHERE TABLE_SCHEMA = CURRENT_SCHEMA()
-          AND TABLE_NAME = 'CUSTOMERS'
-        """
-    )
+    try:
+        cursor.execute(
+            """
+            SELECT
+                CURRENT_DATABASE(),
+                CURRENT_SCHEMA(),
+                CURRENT_ROLE()
+            """
+        )
 
-    count = cursor.fetchone()[0]
+        database, schema, role = cursor.fetchone()
 
-    if count != 1:
-        raise RuntimeError("CUSTOMERS table is missing")
+        print(f"Validating database: {database}")
+        print(f"Validating schema:   {schema}")
+        print(f"Using role:          {role}")
 
-    print("Deployment validation passed.")
+        cursor.execute(
+            """
+            SELECT COUNT(*)
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = CURRENT_SCHEMA()
+              AND TABLE_NAME = 'CUSTOMERS'
+            """
+        )
 
-    cursor.close()
-    conn.close()
+        customer_table_count = cursor.fetchone()[0]
+
+        if customer_table_count != 1:
+            raise RuntimeError("CUSTOMERS table was not found")
+
+        cursor.execute(
+            """
+            SELECT COUNT(*)
+            FROM INFORMATION_SCHEMA.VIEWS
+            WHERE TABLE_SCHEMA = CURRENT_SCHEMA()
+              AND TABLE_NAME = 'CUSTOMER_SUMMARY'
+            """
+        )
+
+        customer_view_count = cursor.fetchone()[0]
+
+        if customer_view_count != 1:
+            raise RuntimeError("CUSTOMER_SUMMARY view was not found")
+
+        print("Deployment validation passed.")
+
+    finally:
+        cursor.close()
+        connection.close()
 
 
 if __name__ == "__main__":
